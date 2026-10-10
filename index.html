@@ -30,7 +30,9 @@ h1{
 <canvas id="matrix"></canvas>
 <h1>LIZZ</h1>
 
-<audio id="song" src="https://github.com/Lizzexe/lizz-matrix/raw/refs/heads/main/BERAT%20%C3%96ZKAN.mp3" autoplay loop></audio>
+<audio id="song" autoplay loop>
+  <source src="https://raw.githubusercontent.com/Lizzexe/lizz-matrix/main/BERAT%20%C3%96ZKAN.mp3" type="audio/mpeg">
+</audio>
 const c=document.getElementById('matrix');
 const ctx=c.getContext('2d');
 let w,h,drops=[],particles=[];
