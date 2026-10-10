@@ -7,11 +7,7 @@
 <title>LIZZ MATRIX</title>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
   background: #000;
@@ -36,21 +32,15 @@ h1 {
   color: #00ff41;
   font-size: clamp(60px, 15vw, 130px);
   letter-spacing: 12px;
-  text-shadow: 0 0 10px #00ff41, 0 0 30px #00ff41,
-               0 0 60px #00ff41;
+  text-shadow: 0 0 10px #00ff41, 0 0 30px #00ff41, 0 0 60px #00ff41;
   z-index: 2;
-  user-select: none;
+  pointer-events: none;
   animation: glow 2s ease-in-out infinite alternate;
 }
 
 @keyframes glow {
-  from {
-    text-shadow: 0 0 10px #00ff41, 0 0 25px #00ff41;
-  }
-  to {
-    text-shadow: 0 0 20px #00ff41, 0 0 50px #00ff41,
-                 0 0 80px #00ff41;
-  }
+  from { text-shadow: 0 0 10px #00ff41, 0 0 25px #00ff41; }
+  to { text-shadow: 0 0 20px #00ff41, 0 0 50px #00ff41, 0 0 80px #00ff41; }
 }
 
 #music {
@@ -72,11 +62,8 @@ h1 {
 </head>
 
 <body>
-
 <canvas id="matrix"></canvas>
-
 <h1>LIZZ</h1>
-
 <button id="music">▶ MÜZİĞİ BAŞLAT</button>
 
 <audio id="song" autoplay loop preload="auto">
@@ -84,10 +71,9 @@ h1 {
 </audio>
 
 <script>
-/* MATRIX YAĞMURU */
+/* MATRIX YAGMURU */
 const canvas = document.getElementById("matrix");
 const ctx = canvas.getContext("2d");
-
 let width, height, drops;
 const fontSize = 16;
 const chars = "アカサタナハマヤラワ012345789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -95,40 +81,34 @@ const chars = "アカサタナハマヤラワ012345789ABCDEFGHIJKLMNOPQRSTUVWXYZ
 function resize() {
   width = canvas.width = window.innerWidth;
   height = canvas.height = window.innerHeight;
-
-  const columns = Math.ceil(width / fontSize);
-  drops = Array.from({ length: columns }, () => Math.random() * -50);
+  drops = Array.from(
+    { length: Math.ceil(width / fontSize) },
+    () => Math.random() * -50
+  );
 }
-
 window.addEventListener("resize", resize);
 resize();
 
 function drawMatrix() {
-  ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+  ctx.fillStyle = "rgba(0,0,0,0.08)";
   ctx.fillRect(0, 0, width, height);
-
   ctx.fillStyle = "#00ff41";
   ctx.font = fontSize + "px monospace";
 
   for (let i = 0; i < drops.length; i++) {
-    const char = chars[Math.floor(Math.random() * chars.length)];
-    ctx.fillText(char, i * fontSize, drops[i] * fontSize);
-
+    ctx.fillText(chars[Math.floor(Math.random() * chars.length)],
+                 i * fontSize, drops[i] * fontSize);
     if (drops[i] * fontSize > height && Math.random() > 0.975) {
       drops[i] = 0;
     }
-
     drops[i] += 0.7;
   }
-
   requestAnimationFrame(drawMatrix);
 }
-
 drawMatrix();
 
-/* YEŞİL FARE İZİ */
+/* FARE IZLERI */
 const trail = [];
-
 window.addEventListener("pointermove", event => {
   for (let i = 0; i < 3; i++) {
     trail.push({
@@ -143,7 +123,6 @@ window.addEventListener("pointermove", event => {
 function drawTrail() {
   for (let i = trail.length - 1; i >= 0; i--) {
     const p = trail[i];
-
     ctx.save();
     ctx.globalAlpha = p.life;
     ctx.fillStyle = "#00ff41";
@@ -151,17 +130,14 @@ function drawTrail() {
     ctx.shadowBlur = 12;
     ctx.fillRect(p.x, p.y, p.size, p.size);
     ctx.restore();
-
     p.life -= 0.035;
     if (p.life <= 0) trail.splice(i, 1);
   }
-
   requestAnimationFrame(drawTrail);
 }
-
 drawTrail();
 
-/* MÜZİK */
+/* MUZIK VE OTOMATIK BASLATMA */
 const song = document.getElementById("song");
 const button = document.getElementById("music");
 
@@ -171,34 +147,35 @@ function updateButton() {
     : "⏸ MÜZİĞİ DURDUR";
 }
 
-button.addEventListener("click", async () => {
+async function startMusic() {
   try {
-    if (song.paused) {
-      await song.play();
-    } else {
-      song.pause();
-    }
+    await song.play();
     updateButton();
   } catch (error) {
-    console.error("Müzik başlatılamadı:", error);
-    button.textContent = "▶ TEKRAR DENE";
+    updateButton();
+  }
+}
+
+/* Site yuklenir yuklenmez baslatmayi dene */
+startMusic();
+window.addEventListener("load", startMusic);
+document.addEventListener("DOMContentLoaded", startMusic);
+
+/* Butonla baslat / durdur */
+button.addEventListener("click", async () => {
+  if (song.paused) {
+    await startMusic();
+  } else {
+    song.pause();
+    updateButton();
   }
 });
 
-song.addEventListener("play", updateButton);
-song.addEventListener("pause", updateButton);
-song.addEventListener("error", () => {
-  console.error("MP3 dosyası yüklenemedi.");
-});
-
-/* SİTE AÇILINCA OTOMATİK ÇALMAYI DENE */
-window.addEventListener("load", () => {
-  song.play().then(updateButton).catch(() => {
-    updateButton();
-  });
-});
+/* Tarayici otomatik oynatmayi engellerse ilk etkilesimde dene */
+document.addEventListener("pointerdown", function firstInteraction() {
+  if (song.paused) startMusic();
+}, { once: true });
 </script>
-
 </body>
 </html>
 ```
