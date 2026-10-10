@@ -68,7 +68,7 @@ h1 {
 
 
 
-<audio id="song" autoplay loop preload="auto">
+<audio id="song" loop preload="auto">
   <source src="https://raw.githubusercontent.com/Lizzexe/lizz-matrix/main/BERAT%20%C3%96ZKAN.mp3" type="audio/mpeg">
 </audio>
 
@@ -120,16 +120,7 @@ drawMatrix();
 /* FARE İZİ */
 const trail = [];
 
-window.addEventListener("pointermove", (event) => {
-  for (let i = 0; i < 3; i++) {
-    trail.push({
-      x: event.clientX + (Math.random() - 0.5) * 12,
-      y: event.clientY + (Math.random() - 0.5) * 12,
-      life: 1,
-      size: Math.random() * 4 + 1
-    });
-  }
-});
+
 
 function drawTrail() {
   for (let i = trail.length - 1; i >= 0; i--) {
@@ -152,14 +143,28 @@ function drawTrail() {
 
 drawTrail();
 
-window.addEventListener("load", async () => {
+const song = document.getElementById("song");
+const button = document.getElementById("music");
+
+button.textContent = "▶ MÜZİĞİ BAŞLAT";
+
+button.onclick = async () => {
   try {
     await song.play();
     button.textContent = "⏸ MÜZİĞİ DURDUR";
-  } catch (error) {
-    button.textContent = "▶ MÜZİĞİ BAŞLAT";
+  } catch (e) {
+    console.error(e);
+    button.textContent = "MÜZİK AÇILAMADI";
   }
-});
+};
+
+song.onpause = () => {
+  button.textContent = "▶ MÜZİĞİ BAŞLAT";
+};
+
+song.onplay = () => {
+  button.textContent = "⏸ MÜZİĞİ DURDUR";
+};
 
 button.addEventListener("click", async () => {
   try {
