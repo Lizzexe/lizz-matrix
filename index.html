@@ -1,1 +1,61 @@
 
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LIZZ MATRIX</title>
+<style>
+body {
+  margin: 0;
+  background: black;
+  color: #00ff41;
+  font-family: monospace;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+h1 {
+  z-index: 1;
+  font-size: 70px;
+  text-shadow: 0 0 20px #00ff41;
+}
+</style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+<h1>LIZZ</h1>
+<script>
+const c = document.getElementById("matrix");
+const ctx = c.getContext("2d");
+function resize() {
+  c.width = innerWidth;
+  c.height = innerHeight;
+}
+resize();
+onresize = resize;
+const chars = "アカサタナハマヤ012345789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+let drops = Array(Math.floor(innerWidth / 16)).fill(1);
+function draw() {
+  ctx.fillStyle = "rgba(0,0,0,0.08)";
+  ctx.fillRect(0,0,c.width,c.height);
+  ctx.fillStyle = "#00ff41";
+  ctx.font = "16px monospace";
+  drops.forEach((y,i) => {
+    ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*16,y*16);
+    if(y*16>c.height && Math.random()>0.975) drops[i]=0;
+    drops[i]++;
+  });
+}
+setInterval(draw,50);
+</script>
+</body>
+</html>
+
